@@ -1,0 +1,13 @@
+Dataset/
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+*.ipynb
+*.docx
+results/
+__pycache__/
+**/__pycache__/
+.git/
+.vscode/
+
+models/best_model.pth
+models/latest_checkpoint.pth

@@ -1,0 +1,28 @@
+{
+    "model": "ResNet50",
+    "task": "Brain Tumor vs Normal MRI Classification",
+    "test_images": 53,
+    "test_accuracy": 0.8113,
+    "brain_tumor": {
+        "precision": 0.8696,
+        "recall": 0.7407,
+        "f1_score": 0.8,
+        "support": 27
+    },
+    "normal": {
+        "precision": 0.7667,
+        "recall": 0.8846,
+        "f1_score": 0.8214,
+        "support": 26
+    },
+    "confusion_matrix": [
+        [
+            20,
+            7
+        ],
+        [
+            3,
+            23
+        ]
+    ]
+}

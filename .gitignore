@@ -1,0 +1,39 @@
+# Python
+
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter
+
+.ipynb_checkpoints/
+
+# Virtual environments
+
+.venv/
+venv/
+env/
+
+# Dataset
+
+Dataset/
+
+# Large model files
+
+*.pth
+*.h5
+
+# Training checkpoints
+
+models/best_model.pth
+models/latest_checkpoint.pth
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Temporary files
+
+*.tmp
+*.log
