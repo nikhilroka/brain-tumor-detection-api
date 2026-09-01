@@ -221,6 +221,19 @@ brain-tumor-detection-api/
 
 > The trained `.pth` model files and original dataset are intentionally excluded from GitHub because of their size.
 
+## 📦 Trained Model
+
+The trained ResNet50 model is distributed through the GitHub release rather than being stored directly in the repository.
+
+### Download
+
+Download `brain_tumor_resnet50.pth` from the [v1.0.0 release](https://github.com/nikhilroka/brain-tumor-detection-api/releases/tag/v1.0.0).
+
+After downloading, place the file at:
+
+```text
+models/brain_tumor_resnet50.pth
+
 ---
 
 ## 🔄 End-to-End Workflow
