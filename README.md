@@ -1,229 +1,128 @@
-# Brain Tumor Detection Using Deep Learning
+# 🧠 Brain Tumor Detection API
 
-A complete deep learning and deployment pipeline for classifying brain MRI images as **Brain Tumor** or **Normal** using a pretrained **ResNet50** convolutional neural network.
+A deep learning–based brain tumor classification system using **PyTorch, ResNet50, FastAPI, and Docker**.
 
-The project demonstrates the complete workflow from model training and evaluation to API-based inference and Docker containerization.
+The system analyzes an uploaded brain MRI image and predicts whether it belongs to the **Brain Tumor** or **Normal** class, along with a confidence score.
 
-> **Note:** This project is an educational/research prototype and is not intended for clinical diagnosis.
+> **Medical disclaimer:** This project is intended for educational, research, and software demonstration purposes only. It is not a medical diagnostic device and should not be used as a substitute for professional medical evaluation.
 
 ---
 
 ## 🚀 Project Overview
 
-This project uses **transfer learning with ResNet50** to classify brain MRI images into two classes:
+This project demonstrates an end-to-end computer vision deployment workflow:
 
-* 🧠 Brain Tumor
-* ✅ Normal
+**MRI Image → ResNet50 → Classification → Confidence Score → FastAPI REST API → Docker**
 
-The trained PyTorch model is exposed through a **FastAPI REST API** and packaged with **Docker**, allowing the application to run in a reproducible environment.
+The model was trained using transfer learning with a pretrained **ResNet50** architecture and adapted for binary classification.
 
-### Technology Pipeline
+### Main Technologies
 
-```text
-MRI Image
-    ↓
-Image Preprocessing
-    ↓
-ResNet50
-    ↓
-Softmax Probability
-    ↓
-Brain Tumor / Normal
-    ↓
-Confidence Score
-    ↓
-FastAPI REST API
-    ↓
-Docker Container
-```
+* Python
+* PyTorch
+* Torchvision
+* ResNet50
+* FastAPI
+* Uvicorn
+* Docker
+* Pillow
+* Jupyter Notebook
 
 ---
 
-## ✨ Key Features
-
-* ResNet50 transfer learning
-* PyTorch-based inference
-* MRI image preprocessing
-* Binary image classification
-* Confidence score generation
-* Test-set evaluation
-* Accuracy, precision, recall and F1-score
-* Confusion matrix
-* FastAPI REST API
-* Interactive Swagger API documentation
-* Input file validation
-* 10 MB upload size limit
-* Docker containerization
-* CPU-based inference support
-
----
-
-## 🧠 Model
+## 🧠 Deep Learning Model
 
 ### Architecture
 
-**ResNet50**
+**ResNet50** was used as the image classification backbone.
 
-The model uses a pretrained ResNet50 architecture and replaces the original classification layer with a custom two-class output layer.
+The final fully connected layer was modified for two classes:
 
 ```text
 ResNet50
-    ↓
-Feature Extraction
-    ↓
-Fully Connected Layer
-    ↓
-2 Classes
-    ↓
-Brain Tumor / Normal
+   │
+   ├── Convolutional layers
+   ├── Residual blocks
+   ├── Global average pooling
+   │
+   └── Fully connected layer
+           │
+           ├── Brain Tumor
+           └── Normal
 ```
 
-### Transfer Learning
+The model uses ImageNet-style image preprocessing:
 
-The pretrained ResNet50 architecture provides learned visual features that can be adapted to the brain MRI classification task.
-
-Input image size:
-
-```text
-224 × 224 × 3
-```
-
-Output:
-
-```text
-2 classes
-```
-
-Classes:
-
-```text
-0 → Brain Tumor
-1 → Normal
-```
+* Resize
+* Center crop
+* RGB conversion
+* Tensor conversion
+* ImageNet normalization
 
 ---
 
 ## 📊 Model Evaluation
 
-The model was evaluated on a separate test set containing:
+The model was evaluated on **53 test images**.
 
-```text
-Total test images: 53
-```
+### Test Performance
 
-### Test Accuracy
-
-**81.13%**
+| Metric          |      Score |
+| --------------- | ---------: |
+| Test Accuracy   | **81.13%** |
+| Macro Precision |     81.81% |
+| Macro Recall    |     81.27% |
+| Macro F1-score  |     81.07% |
 
 ### Classification Report
 
-| Class                |  Precision |     Recall |   F1-Score | Support |
-| -------------------- | ---------: | ---------: | ---------: | ------: |
-| Brain Tumor          |     86.96% |     74.07% |     80.00% |      27 |
-| Normal               |     76.67% |     88.46% |     82.14% |      26 |
-| **Macro Average**    | **81.81%** | **81.27%** | **81.07%** |  **53** |
-| **Weighted Average** | **81.91%** | **81.13%** | **81.05%** |  **53** |
+| Class       | Precision | Recall | F1-score |
+| ----------- | --------: | -----: | -------: |
+| Brain Tumor |    86.96% | 74.07% |   80.00% |
+| Normal      |    76.67% | 88.46% |   82.14% |
 
 ### Confusion Matrix
 
 ```text
-                  Predicted
-               Brain Tumor   Normal
+                 Predicted
+               Tumor   Normal
 
-Actual
-Brain Tumor         20          7
-Normal               3         23
+Actual Tumor      20       7
+Actual Normal      3      23
 ```
 
-The model correctly classified:
-
-* 20 Brain Tumor images
-* 23 Normal images
-
-Total correct predictions:
-
-```text
-43 / 53
-```
+The model correctly classified **43 of 53 test images**.
 
 ---
 
-## ⚙️ Image Preprocessing
+## 📈 Training Results
 
-Images are processed using the following pipeline:
+Training and validation performance are included in the repository.
 
-```text
-Resize
-  ↓
-Center Crop
-  ↓
-Convert to Tensor
-  ↓
-ImageNet Normalization
-```
+### Accuracy
 
-The inference preprocessing uses:
+![Training Validation Accuracy](results/training_validation_accuracy.png)
 
-```text
-Resize: 256
-Center Crop: 224 × 224
-Normalization:
-Mean = [0.485, 0.456, 0.406]
-Std  = [0.229, 0.224, 0.225]
-```
+Additional training plots:
+
+* `AccVal_acc.png`
+* `LossVal_loss.png`
 
 ---
 
-## 🌐 FastAPI
+## ⚡ FastAPI REST API
 
-The trained model is exposed through a REST API using FastAPI.
+The trained ResNet50 model is exposed through a REST API using **FastAPI**.
 
-### Start the API locally
+### API Endpoints
 
-From the `api` directory:
+#### Health Check
 
-```powershell
-python -m uvicorn main:app --reload
+```http
+GET /health
 ```
-
-The API will run at:
-
-```text
-http://127.0.0.1:8000
-```
-
-### Swagger Documentation
-
-Open:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Swagger provides an interactive interface for testing the API.
-
----
-
-## 🔌 API Endpoints
-
-### GET `/`
-
-Checks whether the API is running.
 
 Example response:
-
-```json
-{
-  "message": "Brain Tumor Detection API is running",
-  "status": "success"
-}
-```
-
-### GET `/health`
-
-Returns the API and model health status.
-
-Example:
 
 ```json
 {
@@ -233,23 +132,13 @@ Example:
 }
 ```
 
-### POST `/predict`
+#### Prediction
 
-Accepts an MRI image and returns the predicted class and confidence.
-
-Supported formats:
-
-```text
-JPG
-JPEG
-PNG
+```http
+POST /predict
 ```
 
-Maximum file size:
-
-```text
-10 MB
-```
+Upload a JPG or PNG MRI image.
 
 Example response:
 
@@ -269,23 +158,128 @@ Example response:
 
 ## 🐳 Docker Deployment
 
-The application is containerized using Docker.
+The API can be packaged into a Docker container for reproducible deployment.
 
 ### Build the Docker image
 
-Run this command from the project root:
+From the project root:
 
-```powershell
+```bash
 docker build -t brain-tumor-api .
 ```
 
 ### Run the container
 
-```powershell
+```bash
 docker run --name brain-tumor-container -p 8000:8000 brain-tumor-api
 ```
 
 The API will then be available at:
+
+```text
+http://localhost:8000
+```
+
+### Interactive API Documentation
+
+FastAPI automatically provides Swagger documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+This allows users to upload an MRI image and test the `/predict` endpoint directly.
+
+---
+
+## 📁 Project Structure
+
+```text
+brain-tumor-detection-api/
+│
+├── api/
+│   ├── main.py
+│   └── requirements.txt
+│
+├── models/
+│   ├── project_config.json
+│   └── training_history.json
+│
+├── results/
+│   ├── test_evaluation.json
+│   ├── test_results.json
+│   └── training_validation_accuracy.png
+│
+├── Brain Tumor Detection Project.ipynb
+├── AccVal_acc.png
+├── LossVal_loss.png
+├── Dockerfile
+├── .dockerignore
+├── .gitignore
+└── README.md
+```
+
+> The trained `.pth` model files and original dataset are intentionally excluded from GitHub because of their size.
+
+---
+
+## 🔄 End-to-End Workflow
+
+```text
+                MRI Image
+                    │
+                    ▼
+             Image Preprocessing
+                    │
+                    ▼
+                ResNet50
+                    │
+                    ▼
+              Softmax Output
+                    │
+             ┌──────┴──────┐
+             ▼             ▼
+       Brain Tumor       Normal
+             │             │
+             └──────┬──────┘
+                    ▼
+            Confidence Score
+                    │
+                    ▼
+               FastAPI
+                    │
+                    ▼
+              REST Response
+                    │
+                    ▼
+                 Docker
+```
+
+---
+
+## 🛠️ Local Development
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/nikhilroka/brain-tumor-detection-api.git
+cd brain-tumor-detection-api
+```
+
+### 2. Install dependencies
+
+```bash
+pip install -r api/requirements.txt
+```
+
+### 3. Start the API
+
+```bash
+cd api
+python -m uvicorn main:app --reload
+```
+
+The API runs at:
 
 ```text
 http://127.0.0.1:8000
@@ -297,186 +291,54 @@ Swagger documentation:
 http://127.0.0.1:8000/docs
 ```
 
-### Docker Architecture
-
-```text
-Docker Container
-│
-├── Python 3.11
-├── FastAPI
-├── Uvicorn
-├── PyTorch
-├── Torchvision
-├── Pillow
-├── API
-│   └── main.py
-│
-└── Model
-    └── brain_tumor_resnet50.pth
-```
-
 ---
 
-## 📁 Project Structure
+## 🔬 Skills Demonstrated
 
-```text
-Brain Tumor Project/
-│
-├── api/
-│   ├── main.py
-│   └── requirements.txt
-│
-├── models/
-│   └── brain_tumor_resnet50.pth
-│
-├── Dataset/
-│   ├── Train/
-│   │   ├── Brain Tumor/
-│   │   └── Normal/
-│   │
-│   └── Test/
-│       ├── Brain Tumor/
-│       └── Normal/
-│
-├── results/
-│
-├── frontend/
-│
-├── Dockerfile
-├── .dockerignore
-├── README.md
-│
-└── Brain Tumor Detection Project.ipynb
-```
+This project demonstrates practical skills in:
 
----
-
-## 🛠️ Technologies Used
-
-### Programming
-
-* Python
-
-### Deep Learning
-
-* PyTorch
-* Torchvision
-* ResNet50
+* Computer Vision
+* Deep Learning
 * Transfer Learning
-
-### Computer Vision
-
-* PIL
-* Image preprocessing
-* Image classification
-
-### API Development
-
+* ResNet50
+* Image Classification
+* PyTorch
+* Model Evaluation
+* Confusion Matrix Analysis
+* REST API Development
 * FastAPI
-* Uvicorn
-* REST API
-* Swagger/OpenAPI
-
-### Deployment
-
 * Docker
-* Dockerfile
-* Containerized inference
-
-### Data Science
-
-* NumPy
-* Scikit-learn
-* Matplotlib
+* Model Deployment
+* API Testing
+* Git & GitHub
+* Reproducible ML workflows
 
 ---
 
-## 🔬 Development Workflow
+## 🎯 Potential Client Applications
 
-```text
-1. Dataset Preparation
-        ↓
-2. Image Preprocessing
-        ↓
-3. ResNet50 Transfer Learning
-        ↓
-4. Model Training
-        ↓
-5. Model Evaluation
-        ↓
-6. Save Trained Model
-        ↓
-7. FastAPI Integration
-        ↓
-8. Local API Testing
-        ↓
-9. Dockerization
-        ↓
-10. Container Testing
-```
+The architecture demonstrated here can be adapted for other image-classification applications such as:
+
+* Medical image classification
+* Industrial defect detection
+* Product image classification
+* Quality inspection
+* Object/anomaly classification
+* Custom computer vision APIs
 
 ---
 
-## ⚠️ Limitations
+## 📌 Project Status
 
-This project has several limitations:
+**Status: Portfolio MVP — Complete**
 
-* The test dataset contains only 53 images.
-* The reported performance should not be interpreted as clinical performance.
-* The model has not undergone clinical validation.
-* MRI acquisition protocols may differ between hospitals and datasets.
-* Dataset size and diversity can affect generalization.
-* Confidence scores represent model probabilities and should not be interpreted as certainty.
+Current implementation includes:
 
----
-
-## 🔮 Future Improvements
-
-Potential improvements include:
-
-* Larger and more diverse MRI datasets
-* Cross-validation
-* Hyperparameter optimization
-* Data augmentation improvements
-* Class imbalance analysis
-* Grad-CAM visual explanations
-* Model explainability
-* Automated evaluation reports
-* Frontend web application
-* Cloud deployment
-* CI/CD pipeline
-* Model versioning
-* Monitoring and logging
-* GPU inference optimization
-
----
-
-## 💼 Portfolio / Engineering Value
-
-This project demonstrates practical skills across the machine learning lifecycle:
-
-```text
-Machine Learning
-      +
-Deep Learning
-      +
-Computer Vision
-      +
-Model Evaluation
-      +
-REST API Development
-      +
-Docker
-      +
-Deployment
-```
-
-It demonstrates how a trained deep learning model can be transformed from a research notebook into a **usable inference service**.
-
----
-
-## 📌 Disclaimer
-
-This project is intended for **educational, research, and software engineering demonstration purposes only**.
-
-It should not be used as a medical diagnostic system or as a substitute for professional medical evaluation.
+* ✅ ResNet50 model
+* ✅ Binary MRI classification
+* ✅ Test-set evaluation
+* ✅ FastAPI REST API
+* ✅ Confidence scoring
+* ✅ Docker deployment
+* ✅ GitHub repository
+* ✅ API documentation through Swagger
