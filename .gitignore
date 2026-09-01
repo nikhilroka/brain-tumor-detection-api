@@ -41,3 +41,7 @@ Thumbs.db
 
 # Frontend - not implemented yet
 frontend/
+
+# Local API backups
+api/main_backup.py
+api/main_working_backup.py
